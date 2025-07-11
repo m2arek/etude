@@ -1651,10 +1651,13 @@ document.getElementById("calculateTresorerieBtn")
     /***************************************************
      * 7) CALCUL DE LA PRÉCONISATION
      ***************************************************/
+    /***************************************************
+     * Calcul du cout de l installation
+     ***************************************************/
     function costInstallation(S, territory){
       let raw;
-      if (S <= 100) { raw = S * ((1.9093 - (0.00659 * S))) * 1000; }
-      else { raw = S * 1.15 * 1000; }
+      if (S <= 40) { raw = S * ((1.8596184 - (0.00660593 * S))) * 1000; }
+      else { raw = S * 1.60 * 1000; }
       if (territory === "Corse") { raw *= 1.00; }
       else if (territory === "Reunion") { raw *= 1.13; }
       return Math.round(raw / 100) * 100;
@@ -2362,7 +2365,7 @@ document.getElementById("forcedPower").value = bestS;
     const f = getGrenkeFactor(HT, t);
     if (f === null) continue;
 
-    const monthlyLoyer = Math.floor((HT * f) / 100);
+   const monthlyLoyer = (HT * f) / 100;
     if (monthlyLoyer <= ecoMens) {
       chosenTerm  = t;
       chosenLoyer = monthlyLoyer;
@@ -2376,7 +2379,7 @@ document.getElementById("forcedPower").value = bestS;
     }
   }
 
-  document.getElementById("loyerForced").textContent  = chosenLoyer;
+  document.getElementById("loyerForced").textContent  = chosenLoyer.toFixed(2);
   document.getElementById("dureeForced").textContent = chosenTerm || 0;
   // ───────────── FIN DU BLOC ────────────
 
@@ -2904,16 +2907,16 @@ if (financementMode === "leasing") {
   
   if (leasingCompany === "Leasecom") {
     const annualLeasing = parseFloat(document.getElementById("index_leasing").value) || 0;
-    mensualite = Math.floor((installationCostHT * (annualLeasing/100) * 12) / 12);
+    mensualite = (installationCostHT * (annualLeasing/100));
   } else if (leasingCompany === "Grenke") {
     const factor = getGrenkeFactor(installationCostHT, chosenLeaseDuration);
     if (factor !== null) {
-      mensualite = Math.floor((installationCostHT * factor) / 100);
+      mensualite = (installationCostHT * factor) / 100;
     }
   }
   
   dureeAns = chosenLeaseDuration/12;
-  labelText = `Loyer mensuel sur ${dureeAns} ans: ${mensualite} €`;
+  labelText = `Loyer mensuel sur ${dureeAns} ans: ${mensualite.toFixed(2)} €`;
 
 } else {
   dureeAns = parseInt(document.getElementById("duree_pret").value) || 0;
@@ -2932,10 +2935,10 @@ if (financementMode === "leasing") {
   const nbMois = dureeAns * 12;
   
   if (dureeAns > 0 && tauxAnnuel > 0) {
-    mensualite = Math.floor((montantPret * tauxMensuel * Math.pow(1 + tauxMensuel, nbMois)) / (Math.pow(1 + tauxMensuel, nbMois) - 1));
+    mensualite = (montantPret * tauxMensuel * Math.pow(1 + tauxMensuel, nbMois)) / (Math.pow(1 + tauxMensuel, nbMois) - 1);
   }
   
-  labelText = `Remboursement mensuel sur ${dureeAns} ans: ${mensualite} €`;
+  labelText = `Remboursement mensuel sur ${dureeAns} ans: ${mensualite.toFixed(2)} €`;
 }
 
 pdf.text(labelText, synthFieldX2 + 1, synthRow4Y + synthLineHeight - 2);
@@ -3124,7 +3127,7 @@ batchReportBtn.addEventListener('click', () => {
       pctProd, pctCons, pctRev,
       prime, remise, costInst, costNet,
       gainBrut, gainNet,
-      ecoMensuelle.toFixed(2), chosenLoyer, chosenTerm || '', roi
+       ecoMensuelle.toFixed(2), chosenLoyer.toFixed(2), chosenTerm || '', roi
     ]);
   }
 
@@ -3217,4 +3220,3 @@ batchReportBtn.addEventListener('click', () => {
   </script>
 </body>
 </html>
-
